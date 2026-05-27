@@ -1,103 +1,80 @@
 import io
 import openpyxl
+from openpyxl.styles import Alignment
 
 TEMPLATE_PATH = "艾迪英特請假單_template.xlsx"
 
-LEAVE_TYPES = {
-    "事假": ("D8", "D29"),
-    "病假": ("F8", "F29"),
-    "特休": ("H8", "H29"),
-    "產/婚/喪假": ("J8", "J29"),
-    "其他": ("M8", "M29"),
+LEAVE_CELLS = {
+    "事假":      ("D8",  "D29"),
+    "病假":      ("F8",  "F29"),
+    "特休":      ("H8",  "H29"),
+    "產/婚/喪假": ("J8",  "J29"),
+    "其他":      ("M8",  "M29"),
 }
 
+def _set(ws, addr, value, halign="center"):
+    cell = ws[addr]
+    cell.value = value
+    existing = cell.alignment
+    cell.alignment = Alignment(
+        horizontal=halign,
+        vertical=existing.vertical or "center",
+        wrap_text=existing.wrap_text,
+    )
+
 def generate_leave_xlsx(
-    apply_year: int,
-    apply_month: int,
-    apply_day: int,
-    applicant: str,
-    proxy: str,
-    leave_type: str,
-    reason: str,
-    start_year: int,
-    start_month: int,
-    start_day: int,
-    start_hour: int,
-    start_minute: int,
-    end_year: int,
-    end_month: int,
-    end_day: int,
-    end_hour: int,
-    end_minute: int,
-    total_days: str,
+    apply_year, apply_month, apply_day,
+    applicant, proxy, leave_type, reason,
+    start_year, start_month, start_day, start_hour, start_minute,
+    end_year, end_month, end_day, end_hour, end_minute,
+    total_days,
 ) -> bytes:
     wb = openpyxl.load_workbook(TEMPLATE_PATH)
     ws = wb["假單"]
-
-    # Enable print centering
     ws.print_options.horizontalCentered = True
 
-    def fill(cell_addr, value):
-        ws[cell_addr] = value
+    def fill(addr, val): _set(ws, addr, val)
 
-    # === 公司留存 (rows 4-18) ===
-    fill("I4", apply_year)
-    fill("K4", apply_month)
-    fill("M4", apply_day)
+    for copy_offset, rows in [
+        (0,  dict(date_y="I4",  date_m="K4",  date_d="M4",
+                  applicant="D5", proxy="K5",
+                  reason="D9",
+                  sy="C11", sm="E11", sd="G11", sh="I11", smi="K11",
+                  ey="C12", em="E12", ed="G12", eh="I12", emi="K12",
+                  days="M11")),
+        (21, dict(date_y="I25", date_m="K25", date_d="M25",
+                  applicant="D26", proxy="K26",
+                  reason="D30",
+                  sy="C32", sm="E32", sd="G32", sh="I32", smi="K32",
+                  ey="C33", em="E33", ed="G33", eh="I33", emi="K33",
+                  days="M32")),
+    ]:
+        fill(rows["date_y"], apply_year)
+        fill(rows["date_m"], apply_month)
+        fill(rows["date_d"], apply_day)
+        fill(rows["applicant"], applicant)
+        fill(rows["proxy"], proxy)
+        fill(rows["reason"], reason)
+        fill(rows["sy"], start_year)
+        fill(rows["sm"], start_month)
+        fill(rows["sd"], start_day)
+        fill(rows["sh"], start_hour)
+        fill(rows["smi"], f"{start_minute:02d}")
+        fill(rows["ey"], end_year)
+        fill(rows["em"], end_month)
+        fill(rows["ed"], end_day)
+        fill(rows["eh"], end_hour)
+        fill(rows["emi"], f"{end_minute:02d}")
+        fill(rows["days"], total_days)
 
-    fill("D5", applicant)
-    fill("K5", proxy)
-
-    # Clear all leave type cells first, then mark selected
-    for lt, (c1, _) in LEAVE_TYPES.items():
-        ws[c1] = ""
-    if leave_type in LEAVE_TYPES:
-        fill(LEAVE_TYPES[leave_type][0], "○")
-
-    fill("D9", reason)
-
-    fill("C11", start_year)
-    fill("E11", start_month)
-    fill("G11", start_day)
-    fill("I11", start_hour)
-    fill("K11", start_minute)
-
-    fill("C12", end_year)
-    fill("E12", end_month)
-    fill("G12", end_day)
-    fill("I12", end_hour)
-    fill("K12", end_minute)
-
-    fill("M11", total_days)
-
-    # === 請假者留存 (rows 25-39) ===
-    fill("I25", apply_year)
-    fill("K25", apply_month)
-    fill("M25", apply_day)
-
-    fill("D26", applicant)
-    fill("K26", proxy)
-
-    for lt, (_, c2) in LEAVE_TYPES.items():
-        ws[c2] = ""
-    if leave_type in LEAVE_TYPES:
-        fill(LEAVE_TYPES[leave_type][1], "○")
-
-    fill("D30", reason)
-
-    fill("C32", start_year)
-    fill("E32", start_month)
-    fill("G32", start_day)
-    fill("I32", start_hour)
-    fill("K32", start_minute)
-
-    fill("C33", end_year)
-    fill("E33", end_month)
-    fill("G33", end_day)
-    fill("I33", end_hour)
-    fill("K33", end_minute)
-
-    fill("M32", total_days)
+    # Clear all checkbox cells then mark selected
+    all_ck = [c for pair in LEAVE_CELLS.values() for c in pair]
+    for addr in all_ck:
+        ws[addr].value = ""
+    if leave_type in LEAVE_CELLS:
+        c1, c2 = LEAVE_CELLS[leave_type]
+        fill(c1, "○")
+        fill(c2, "○")
 
     buf = io.BytesIO()
     wb.save(buf)
