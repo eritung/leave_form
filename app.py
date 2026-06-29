@@ -20,7 +20,6 @@ html, body, [class*="css"] {
     font-family: 'Noto Sans TC', 'Hiragino Kaku Gothic ProN', sans-serif;
     color: #1a1a1a;
 }
-.main > div { padding-top: 1.5rem; }
 .stApp { background-color: #f7f5f0; }
 
 /* ── header ── */
@@ -50,13 +49,15 @@ html, body, [class*="css"] {
 }
 
 /* ── remove top ghost block ── */
-[data-testid=\"stMainBlockContainer\"] > div:first-child:empty,
-[data-testid=\"stVerticalBlock\"] > div:first-child > div:empty {
-    display: none !important;
-}
-section[data-testid=\"stMain\"] > div:first-child {
+[data-testid=\"stMainBlockContainer\"],
+.block-container,
+[data-testid=\"stAppViewBlockContainer\"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     padding-top: 0 !important;
 }
+.main > div { padding-top: 0 !important; }
 
 /* ── inputs ── */
 .stTextInput label, .stTextArea label,
