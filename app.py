@@ -40,12 +40,13 @@ html, body, [class*="css"] {
 /* ── panel ── */
 .panel {
     background: #ffffff; border: 1px solid #e2ddd7;
-    padding: 1.1rem 1.3rem .9rem; margin-bottom: .75rem;
+    padding: 0 1.3rem 1rem; margin-bottom: .75rem;
 }
 .panel-title {
     font-size: .64rem; letter-spacing: .16em; color: #a09890;
-    margin-bottom: .7rem; padding-bottom: .2rem;
+    margin: 0 -1.3rem .9rem; padding: .55rem 1.3rem .45rem;
     border-bottom: 1px solid #ece7e0;
+    background: #faf8f5;
 }
 
 /* ── inputs ── */
