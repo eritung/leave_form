@@ -15,11 +15,10 @@ LEAVE_CELLS = {
 def _set(ws, addr, value, halign="center"):
     cell = ws[addr]
     cell.value = value
-    existing = cell.alignment
     cell.alignment = Alignment(
         horizontal=halign,
-        vertical=existing.vertical or "center",
-        wrap_text=existing.wrap_text,
+        vertical="center",
+        wrap_text=False,
     )
 
 def generate_leave_xlsx(
