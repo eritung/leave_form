@@ -46,7 +46,16 @@ html, body, [class*="css"] {
     font-size: .64rem; letter-spacing: .16em; color: #a09890;
     margin: 0 -1.3rem .9rem; padding: .55rem 1.3rem .45rem;
     border-bottom: 1px solid #ece7e0;
-    background: #faf8f5;
+    background: #ffffff;
+}
+
+/* ── remove top ghost block ── */
+[data-testid=\"stMainBlockContainer\"] > div:first-child:empty,
+[data-testid=\"stVerticalBlock\"] > div:first-child > div:empty {
+    display: none !important;
+}
+section[data-testid=\"stMain\"] > div:first-child {
+    padding-top: 0 !important;
 }
 
 /* ── inputs ── */
