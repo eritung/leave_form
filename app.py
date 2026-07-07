@@ -93,37 +93,21 @@ html, body, [class*="css"] {
     background: var(--accent); display: inline-block;
 }
 
-/* ═════════════════════════════════════════
-   EQUAL-HEIGHT COLUMNS
-   左欄（申請資訊 + 假別事由）跟著右欄（請假時間）的
-   實際高度撐開，事由欄位會自動長高把多出來的空間吃掉。
-   ═════════════════════════════════════════ */
-div[data-testid="stHorizontalBlock"] { align-items: stretch !important; }
-
-div[data-testid="column"]:has(.st-key-panel_leave) > div[data-testid="stVerticalBlock"] {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+/* ── date dropdowns (st.selectbox) ── */
+div[data-baseweb="select"] > div {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--border) !important;
+    background: var(--bg) !important;
+    min-height: 2.5rem !important;
 }
-.st-key-panel_leave {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
+div[data-baseweb="select"] > div:hover {
+    border-color: var(--accent) !important;
 }
-.st-key-panel_leave > div {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+div[data-baseweb="popover"] li {
+    font-size: .86rem !important;
 }
-.st-key-panel_leave [data-testid="stTextArea"] {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-.st-key-panel_leave [data-testid="stTextArea"] textarea {
-    flex: 1;
-    height: 100% !important;
-    min-height: 90px;
+div[data-baseweb="popover"] li:hover {
+    background: var(--accent-soft) !important;
 }
 
 /* ── inputs ── */
@@ -168,11 +152,12 @@ div[data-testid="column"]:has(.st-key-panel_leave) > div[data-testid="stVertical
    RADIO CHIPS (Claude suggestion-chip style)
    ═════════════════════════════════════════ */
 [data-testid="stRadio"] > label { display: none !important; }
+[data-testid="stRadio"] [role="radiogroup"],
 [data-testid="stRadio"] > div {
     display: flex !important; flex-wrap: wrap !important;
     gap: .5rem !important; align-items: center !important;
 }
-[data-testid="stRadio"] label[data-baseweb="radio"] {
+[data-testid="stRadio"] label {
     display: inline-flex !important;
     align-items: center !important; justify-content: center !important;
     background: var(--bg) !important; border: 1px solid var(--border) !important;
@@ -181,42 +166,32 @@ div[data-testid="column"]:has(.st-key-panel_leave) > div[data-testid="stVertical
     transition: background .15s, border-color .15s, color .15s !important;
     min-width: 62px !important;
 }
-[data-testid="stRadio"] label[data-baseweb="radio"]:hover {
+[data-testid="stRadio"] label:hover {
     background: var(--accent-soft) !important; border-color: #e0c3ac !important;
 }
-/* Hide circle indicator */
-[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
+/* Hide circle indicator (always the first child of the label) */
+[data-testid="stRadio"] label > div:first-child {
     display: none !important;
 }
-/* Unselected text */
-[data-testid="stRadio"] label[data-baseweb="radio"] > div:last-child,
-[data-testid="stRadio"] label[data-baseweb="radio"] > div:last-child *,
-[data-testid="stRadio"] label[data-baseweb="radio"] span,
-[data-testid="stRadio"] label[data-baseweb="radio"] p {
+/* Text styling for whatever is left in the label */
+[data-testid="stRadio"] label div,
+[data-testid="stRadio"] label span,
+[data-testid="stRadio"] label p {
     color: var(--text) !important; font-size: .84rem !important;
     line-height: 1 !important; text-align: center !important;
     margin: 0 !important; padding: 0 !important; font-weight: 500 !important;
 }
-/* Selected: coral background */
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) {
+/* Selected: coral background, white text on every descendant */
+[data-testid="stRadio"] label:has(input:checked) {
     background: var(--accent) !important; border-color: var(--accent) !important;
 }
-/* Selected: force WHITE on every child */
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked),
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) *,
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) > div,
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) > div *,
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) > div:last-child,
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) > div:last-child p,
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) > div:last-child span,
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer"],
-[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer"] p {
+[data-testid="stRadio"] label:has(input:checked) * {
     color: #ffffff !important;
 }
 
-/* ── generate button (Claude send-button style) ── */
+/* ── generate button (Claude CTA style) ── */
 .stButton > button {
-    width: 100%; border-radius: var(--radius-pill) !important;
+    width: 100%; border-radius: var(--radius-lg) !important;
     background-color: var(--accent) !important; color: #ffffff !important;
     font-family: 'Noto Sans TC', sans-serif !important;
     font-size: .88rem !important; font-weight: 600 !important; letter-spacing: .02em !important;
@@ -225,6 +200,7 @@ div[data-testid="column"]:has(.st-key-panel_leave) > div[data-testid="stVertical
     box-shadow: 0 1px 2px rgba(194, 103, 63, 0.25);
 }
 .stButton > button:hover { background-color: var(--accent-hover) !important; }
+div[data-testid="stButton"] { margin-top: .2rem; }
 .stSuccess {
     border-radius: var(--radius-md) !important;
     border: 1px solid #ecd8c9 !important;
@@ -247,6 +223,10 @@ st.markdown("""
 today = date.today()
 roc_now = today.year - 1911
 
+YEAR_OPTIONS  = list(range(roc_now - 2, roc_now + 3))
+MONTH_OPTIONS = list(range(1, 13))
+DAY_OPTIONS   = list(range(1, 32))
+
 for k, v in [("xlsx_data", None), ("xlsx_fname", None), ("download_id", 0)]:
     if k not in st.session_state:
         st.session_state[k] = v
@@ -259,9 +239,9 @@ with left:
     with st.container(key="panel_apply"):
         st.markdown('<p class="panel-title">申請資訊　APPLICATION INFO</p>', unsafe_allow_html=True)
         d1, d2, d3 = st.columns(3)
-        with d1: apply_year  = st.number_input("申請日期　民國年", min_value=100, max_value=200, value=roc_now, step=1)
-        with d2: apply_month = st.number_input("月", min_value=1, max_value=12, value=today.month, step=1)
-        with d3: apply_day   = st.number_input("日", min_value=1, max_value=31, value=today.day, step=1)
+        with d1: apply_year  = st.selectbox("申請日期　民國年", options=YEAR_OPTIONS, index=YEAR_OPTIONS.index(roc_now))
+        with d2: apply_month = st.selectbox("月", options=MONTH_OPTIONS, index=MONTH_OPTIONS.index(today.month))
+        with d3: apply_day   = st.selectbox("日", options=DAY_OPTIONS, index=DAY_OPTIONS.index(today.day))
         p1, p2 = st.columns(2)
         with p1: applicant = st.text_input("請假人", value="董伊淇")
         with p2: proxy     = st.text_input("代理人", value="葉詩宣")
@@ -282,16 +262,16 @@ with right:
         # 開始日期
         st.markdown('<span class="sub-label">開始日期　START DATE</span>', unsafe_allow_html=True)
         s1, s2, s3 = st.columns(3)
-        with s1: start_year  = st.number_input("民國年", min_value=100, max_value=200, value=roc_now, step=1, key="sy")
-        with s2: start_month = st.number_input("月", min_value=1, max_value=12, value=today.month, step=1, key="sm")
-        with s3: start_day   = st.number_input("日", min_value=1, max_value=31, value=today.day, step=1, key="sd")
+        with s1: start_year  = st.selectbox("民國年", options=YEAR_OPTIONS, index=YEAR_OPTIONS.index(roc_now), key="sy")
+        with s2: start_month = st.selectbox("月", options=MONTH_OPTIONS, index=MONTH_OPTIONS.index(today.month), key="sm")
+        with s3: start_day   = st.selectbox("日", options=DAY_OPTIONS, index=DAY_OPTIONS.index(today.day), key="sd")
 
         # 結束日期
         st.markdown('<span class="sub-label">結束日期　END DATE</span>', unsafe_allow_html=True)
         e1, e2, e3 = st.columns(3)
-        with e1: end_year  = st.number_input("民國年", min_value=100, max_value=200, value=roc_now, step=1, key="ey")
-        with e2: end_month = st.number_input("月", min_value=1, max_value=12, value=today.month, step=1, key="em")
-        with e3: end_day   = st.number_input("日", min_value=1, max_value=31, value=today.day, step=1, key="ed")
+        with e1: end_year  = st.selectbox("民國年", options=YEAR_OPTIONS, index=YEAR_OPTIONS.index(roc_now), key="ey")
+        with e2: end_month = st.selectbox("月", options=MONTH_OPTIONS, index=MONTH_OPTIONS.index(today.month), key="em")
+        with e3: end_day   = st.selectbox("日", options=DAY_OPTIONS, index=DAY_OPTIONS.index(today.day), key="ed")
 
         # 時段
         st.markdown('<span class="sub-label">時段　TIME SLOT</span>', unsafe_allow_html=True)
@@ -334,7 +314,6 @@ with right:
         total_days = total_days_input.strip() or computed_days
 
     # ── Generate ──────────────────────────────────────────────────────────────
-    st.markdown("")
     if st.button("生成並下載請假單　Generate & Download"):
         if not applicant.strip():
             st.warning("請填寫請假人姓名。")
@@ -379,3 +358,36 @@ with right:
 </script></body></html>""", height=0)
 
         st.success(f"✓ {dl_fname} 已下載")
+
+# ── 左右欄等高同步 ─────────────────────────────────────────────────────────
+# 直接量測「請假時間」卡片的實際高度，反推「假別與事由」卡片要多高，
+# 讓左右兩欄的底部對齊（比用 CSS 猜測 DOM 結構更可靠）。
+components.html("""
+<script>
+(function() {
+  function sync() {
+    var doc = window.parent.document;
+    var apply = doc.querySelector('.st-key-panel_apply');
+    var leave = doc.querySelector('.st-key-panel_leave');
+    var period = doc.querySelector('.st-key-panel_period');
+    if (!apply || !leave || !period) return;
+
+    leave.style.minHeight = '0px';
+    var applyBox  = apply.getBoundingClientRect();
+    var leaveBox  = leave.getBoundingClientRect();
+    var periodBox = period.getBoundingClientRect();
+
+    var gap = leaveBox.top - applyBox.bottom; // 左欄兩張卡片之間目前的間距
+    var needed = periodBox.height - applyBox.height - gap;
+
+    if (needed > leaveBox.height) {
+      leave.style.minHeight = needed + 'px';
+    }
+  }
+  setTimeout(sync, 60);
+  setTimeout(sync, 300);
+  setTimeout(sync, 800);
+  window.addEventListener('resize', sync);
+})();
+</script>
+""", height=0)
