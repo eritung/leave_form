@@ -69,13 +69,16 @@ html, body, [class*="css"] {
 }
 .form-header p { font-size: .82rem; color: var(--text-faint); letter-spacing: .03em; }
 
-/* ── panel (chat-card style) ── */
-.panel {
+/* ── panel (chat-card style) ──
+   Targets the wrapper div that st.container(key=...) generates,
+   e.g. st.container(key="panel_apply") → .st-key-panel_apply           */
+.st-key-panel_apply,
+.st-key-panel_leave,
+.st-key-panel_period {
     background: var(--panel);
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-lg);
     padding: 1.1rem 1.4rem 1.3rem;
-    margin-bottom: 1rem;
     box-shadow: 0 1px 2px rgba(61, 57, 41, 0.04);
 }
 .panel-title {
@@ -88,6 +91,39 @@ html, body, [class*="css"] {
 .panel-title::before {
     content: ""; width: 6px; height: 6px; border-radius: 50%;
     background: var(--accent); display: inline-block;
+}
+
+/* ═════════════════════════════════════════
+   EQUAL-HEIGHT COLUMNS
+   左欄（申請資訊 + 假別事由）跟著右欄（請假時間）的
+   實際高度撐開，事由欄位會自動長高把多出來的空間吃掉。
+   ═════════════════════════════════════════ */
+div[data-testid="stHorizontalBlock"] { align-items: stretch !important; }
+
+div[data-testid="column"]:has(.st-key-panel_leave) > div[data-testid="stVerticalBlock"] {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.st-key-panel_leave {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+.st-key-panel_leave > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.st-key-panel_leave [data-testid="stTextArea"] {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.st-key-panel_leave [data-testid="stTextArea"] textarea {
+    flex: 1;
+    height: 100% !important;
+    min-height: 90px;
 }
 
 /* ── inputs ── */
@@ -220,86 +256,82 @@ left, right = st.columns([3, 2], gap="large")
 
 with left:
     # ── 申請資訊 ──────────────────────────────────────────────────────────────
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-    st.markdown('<p class="panel-title">申請資訊　APPLICATION INFO</p>', unsafe_allow_html=True)
-    d1, d2, d3 = st.columns(3)
-    with d1: apply_year  = st.number_input("申請日期　民國年", min_value=100, max_value=200, value=roc_now, step=1)
-    with d2: apply_month = st.number_input("月", min_value=1, max_value=12, value=today.month, step=1)
-    with d3: apply_day   = st.number_input("日", min_value=1, max_value=31, value=today.day, step=1)
-    p1, p2 = st.columns(2)
-    with p1: applicant = st.text_input("請假人", value="董伊淇")
-    with p2: proxy     = st.text_input("代理人", value="葉詩宣")
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.container(key="panel_apply"):
+        st.markdown('<p class="panel-title">申請資訊　APPLICATION INFO</p>', unsafe_allow_html=True)
+        d1, d2, d3 = st.columns(3)
+        with d1: apply_year  = st.number_input("申請日期　民國年", min_value=100, max_value=200, value=roc_now, step=1)
+        with d2: apply_month = st.number_input("月", min_value=1, max_value=12, value=today.month, step=1)
+        with d3: apply_day   = st.number_input("日", min_value=1, max_value=31, value=today.day, step=1)
+        p1, p2 = st.columns(2)
+        with p1: applicant = st.text_input("請假人", value="董伊淇")
+        with p2: proxy     = st.text_input("代理人", value="葉詩宣")
 
     # ── 假別 & 事由 ───────────────────────────────────────────────────────────
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-    st.markdown('<p class="panel-title">假別與事由　LEAVE TYPE & REASON</p>', unsafe_allow_html=True)
-    leave_type = st.radio("假別", options=["事假", "病假", "特休", "產/婚/喪假", "其他"], horizontal=True)
-    auto_reason = "特休" if leave_type == "特休" else ""
-    reason = st.text_area("事由", value=auto_reason, height=68,
-                          placeholder="請填寫請假事由 …", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.container(key="panel_leave"):
+        st.markdown('<p class="panel-title">假別與事由　LEAVE TYPE & REASON</p>', unsafe_allow_html=True)
+        leave_type = st.radio("假別", options=["事假", "病假", "特休", "產/婚/喪假", "其他"], horizontal=True)
+        auto_reason = "特休" if leave_type == "特休" else ""
+        reason = st.text_area("事由", value=auto_reason, height=150,
+                              placeholder="請填寫請假事由 …", label_visibility="collapsed")
 
 with right:
     # ── 請假時間 ──────────────────────────────────────────────────────────────
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-    st.markdown('<p class="panel-title">請假時間　LEAVE PERIOD</p>', unsafe_allow_html=True)
+    with st.container(key="panel_period"):
+        st.markdown('<p class="panel-title">請假時間　LEAVE PERIOD</p>', unsafe_allow_html=True)
 
-    # 開始日期
-    st.markdown('<span class="sub-label">開始日期　START DATE</span>', unsafe_allow_html=True)
-    s1, s2, s3 = st.columns(3)
-    with s1: start_year  = st.number_input("民國年", min_value=100, max_value=200, value=roc_now, step=1, key="sy")
-    with s2: start_month = st.number_input("月", min_value=1, max_value=12, value=today.month, step=1, key="sm")
-    with s3: start_day   = st.number_input("日", min_value=1, max_value=31, value=today.day, step=1, key="sd")
+        # 開始日期
+        st.markdown('<span class="sub-label">開始日期　START DATE</span>', unsafe_allow_html=True)
+        s1, s2, s3 = st.columns(3)
+        with s1: start_year  = st.number_input("民國年", min_value=100, max_value=200, value=roc_now, step=1, key="sy")
+        with s2: start_month = st.number_input("月", min_value=1, max_value=12, value=today.month, step=1, key="sm")
+        with s3: start_day   = st.number_input("日", min_value=1, max_value=31, value=today.day, step=1, key="sd")
 
-    # 結束日期
-    st.markdown('<span class="sub-label">結束日期　END DATE</span>', unsafe_allow_html=True)
-    e1, e2, e3 = st.columns(3)
-    with e1: end_year  = st.number_input("民國年", min_value=100, max_value=200, value=roc_now, step=1, key="ey")
-    with e2: end_month = st.number_input("月", min_value=1, max_value=12, value=today.month, step=1, key="em")
-    with e3: end_day   = st.number_input("日", min_value=1, max_value=31, value=today.day, step=1, key="ed")
+        # 結束日期
+        st.markdown('<span class="sub-label">結束日期　END DATE</span>', unsafe_allow_html=True)
+        e1, e2, e3 = st.columns(3)
+        with e1: end_year  = st.number_input("民國年", min_value=100, max_value=200, value=roc_now, step=1, key="ey")
+        with e2: end_month = st.number_input("月", min_value=1, max_value=12, value=today.month, step=1, key="em")
+        with e3: end_day   = st.number_input("日", min_value=1, max_value=31, value=today.day, step=1, key="ed")
 
-    # 時段
-    st.markdown('<span class="sub-label">時段　TIME SLOT</span>', unsafe_allow_html=True)
-    time_preset = st.radio("時段", options=["整天", "半天上午", "半天下午"], horizontal=True, key="tp")
+        # 時段
+        st.markdown('<span class="sub-label">時段　TIME SLOT</span>', unsafe_allow_html=True)
+        time_preset = st.radio("時段", options=["整天", "半天上午", "半天下午"], horizontal=True, key="tp")
 
-    TIME_MAP = {
-        "整天":    (9, 30, 18, 30),
-        "半天上午": (9,  0, 13,  0),
-        "半天下午": (14, 0, 18,  0),
-    }
-    sh, sm_val, eh, em_val = TIME_MAP[time_preset]
+        TIME_MAP = {
+            "整天":    (9, 30, 18, 30),
+            "半天上午": (9,  0, 13,  0),
+            "半天下午": (14, 0, 18,  0),
+        }
+        sh, sm_val, eh, em_val = TIME_MAP[time_preset]
 
-    # 計算天數
-    try:
-        sd = date(int(start_year) + 1911, int(start_month), int(start_day))
-        ed = date(int(end_year)   + 1911, int(end_month),   int(end_day))
-        delta = (ed - sd).days + 1
-        if time_preset == "整天":
-            computed_days = str(delta) if delta > 1 else "1"
-        else:
-            computed_days = str(delta * 0.5) if delta > 1 else "0.5"
-    except Exception:
-        computed_days = "1"
+        # 計算天數
+        try:
+            sd = date(int(start_year) + 1911, int(start_month), int(start_day))
+            ed = date(int(end_year)   + 1911, int(end_month),   int(end_day))
+            delta = (ed - sd).days + 1
+            if time_preset == "整天":
+                computed_days = str(delta) if delta > 1 else "1"
+            else:
+                computed_days = str(delta * 0.5) if delta > 1 else "0.5"
+        except Exception:
+            computed_days = "1"
 
-    # 時間摘要顯示
-    st.markdown(
-        f'<div class="time-box">'
-        f'<span class="time-val">{sh:02d}:{sm_val:02d}&ensp;—&ensp;{eh:02d}:{em_val:02d}</span>'
-        f'<span class="days-val">{computed_days} 天</span>'
-        f'</div>',
-        unsafe_allow_html=True
-    )
+        # 時間摘要顯示
+        st.markdown(
+            f'<div class="time-box">'
+            f'<span class="time-val">{sh:02d}:{sm_val:02d}&ensp;—&ensp;{eh:02d}:{em_val:02d}</span>'
+            f'<span class="days-val">{computed_days} 天</span>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
-    # 可手動修改天數
-    total_days_input = st.text_input(
-        "合計天數（可手動修改）",
-        value=computed_days,
-        label_visibility="visible",
-    )
-    total_days = total_days_input.strip() or computed_days
-
-    st.markdown('</div>', unsafe_allow_html=True)
+        # 可手動修改天數
+        total_days_input = st.text_input(
+            "合計天數（可手動修改）",
+            value=computed_days,
+            label_visibility="visible",
+        )
+        total_days = total_days_input.strip() or computed_days
 
     # ── Generate ──────────────────────────────────────────────────────────────
     st.markdown("")
