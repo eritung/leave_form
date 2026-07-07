@@ -14,105 +14,139 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;600&display=swap');
+
+:root {
+    --bg:            #FAF9F6;
+    --panel:         #FFFFFF;
+    --border:        #E7E4DA;
+    --border-soft:   #EFEDE4;
+    --text:          #3D3929;
+    --text-soft:     #83807A;
+    --text-faint:    #ACA89F;
+    --accent:        #C2673F;
+    --accent-hover:  #AC5834;
+    --accent-soft:   #F3E4D8;
+    --radius-lg:      20px;
+    --radius-md:      14px;
+    --radius-pill:    999px;
+}
 
 html, body, [class*="css"] {
     font-family: 'Noto Sans TC', 'Hiragino Kaku Gothic ProN', sans-serif;
-    color: #1a1a1a;
+    color: var(--text);
 }
-.stApp { background-color: #f7f5f0; }
+.stApp { background-color: var(--bg); }
+
+/* ── remove top ghost block ── */
+[data-testid="stMainBlockContainer"],
+.block-container,
+[data-testid="stAppViewBlockContainer"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding-top: 1rem !important;
+    max-width: 900px !important;
+}
+.main > div { padding-top: 0 !important; }
 
 /* ── header ── */
 .form-header {
     text-align: center;
-    padding: 1.4rem 0 1rem;
-    border-bottom: 1px solid #c8c0b4;
-    margin-bottom: 1.4rem;
+    padding: .4rem 0 1.8rem;
+    margin-bottom: .4rem;
+}
+.form-header .mark {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; border-radius: var(--radius-pill);
+    background: var(--accent); color: #fff; font-size: 1.1rem;
+    margin-bottom: .9rem;
 }
 .form-header h1 {
     font-family: 'Noto Serif TC', serif;
-    font-weight: 600; font-size: 1.5rem;
-    letter-spacing: .2em; color: #1a1a1a; margin-bottom: .15rem;
+    font-weight: 500; font-size: 1.55rem;
+    letter-spacing: .01em; color: var(--text); margin-bottom: .3rem;
 }
-.form-header p { font-size: .73rem; color: #aaa; letter-spacing: .08em; }
+.form-header p { font-size: .82rem; color: var(--text-faint); letter-spacing: .03em; }
 
-/* ── panel ── */
+/* ── panel (chat-card style) ── */
 .panel {
-    background: #ffffff; border: 1px solid #e2ddd7;
-    padding: 0 1.3rem 1rem; margin-bottom: .75rem;
+    background: var(--panel);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.4rem 1.3rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 2px rgba(61, 57, 41, 0.04);
 }
 .panel-title {
-    font-size: .64rem; letter-spacing: .16em; color: #a09890;
-    margin: 0 -1.3rem .9rem; padding: .55rem 1.3rem .45rem;
-    border-bottom: 1px solid #ece7e0;
-    background: #ffffff;
+    font-size: .78rem; font-weight: 600; letter-spacing: .02em; color: var(--text);
+    margin: 0 0 .9rem;
+    padding: 0 0 .7rem;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex; align-items: center; gap: .4rem;
 }
-
-/* ── remove top ghost block ── */
-[data-testid=\"stMainBlockContainer\"],
-.block-container,
-[data-testid=\"stAppViewBlockContainer\"] {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding-top: 0 !important;
+.panel-title::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); display: inline-block;
 }
-.main > div { padding-top: 0 !important; }
 
 /* ── inputs ── */
 .stTextInput label, .stTextArea label,
 .stNumberInput label, .stSelectbox label {
-    font-size: .74rem !important; color: #777 !important;
-    letter-spacing: .04em !important; font-weight: 400 !important;
+    font-size: .78rem !important; color: var(--text-soft) !important;
+    letter-spacing: .01em !important; font-weight: 500 !important;
 }
-.stTextInput input, .stNumberInput input {
-    border-radius: 0 !important; border: none !important;
-    border-bottom: 1px solid #c4bdb5 !important;
-    background: transparent !important; font-size: .88rem !important;
-    padding: .28rem .05rem !important; box-shadow: none !important;
+.stTextInput input, .stNumberInput input, .stTextArea textarea {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--border) !important;
+    background: var(--bg) !important; font-size: .9rem !important;
+    padding: .5rem .75rem !important; box-shadow: none !important;
+    color: var(--text) !important;
 }
-.stTextInput input:focus, .stNumberInput input:focus {
-    border-bottom-color: #1a1a1a !important; box-shadow: none !important;
+.stTextInput input:focus, .stNumberInput input:focus, .stTextArea textarea:focus {
+    border-color: var(--accent) !important; box-shadow: 0 0 0 3px var(--accent-soft) !important;
+    background: #ffffff !important;
 }
 
 /* ── sub-section label ── */
 .sub-label {
-    font-size: .68rem; letter-spacing: .1em; color: #b0a89e;
-    margin: .6rem 0 .2rem; display: block;
+    font-size: .74rem; font-weight: 500; letter-spacing: .01em; color: var(--text-soft);
+    margin: .7rem 0 .35rem; display: block;
 }
 
 /* ── time summary box ── */
 .time-box {
-    background: #f5f2ed; border: 1px solid #ddd8d0;
-    padding: .5rem .9rem;
+    background: var(--accent-soft); border: 1px solid #ecd8c9;
+    border-radius: var(--radius-md);
+    padding: .6rem 1rem;
     display: flex; align-items: center; justify-content: center;
-    gap: .5rem; margin: .5rem 0 .3rem;
+    gap: .6rem; margin: .6rem 0 .4rem;
 }
-.time-box .time-val { font-size: .86rem; color: #333; }
+.time-box .time-val { font-size: .92rem; color: var(--text); font-weight: 500; }
 .time-box .days-val {
-    font-size: .72rem; color: #aaa; 
-    border-left: 1px solid #d0c8c0; padding-left: .5rem; margin-left: .2rem;
+    font-size: .78rem; color: var(--accent-hover); font-weight: 600;
+    border-left: 1px solid #e0c3ac; padding-left: .6rem; margin-left: .2rem;
 }
 
 /* ═════════════════════════════════════════
-   RADIO CHIPS
+   RADIO CHIPS (Claude suggestion-chip style)
    ═════════════════════════════════════════ */
 [data-testid="stRadio"] > label { display: none !important; }
 [data-testid="stRadio"] > div {
     display: flex !important; flex-wrap: wrap !important;
-    gap: .4rem !important; align-items: center !important;
+    gap: .5rem !important; align-items: center !important;
 }
 [data-testid="stRadio"] label[data-baseweb="radio"] {
     display: inline-flex !important;
     align-items: center !important; justify-content: center !important;
-    background: #f5f2ed !important; border: 1px solid #d0c8c0 !important;
-    border-radius: 2px !important; padding: .36rem .9rem !important;
+    background: var(--bg) !important; border: 1px solid var(--border) !important;
+    border-radius: var(--radius-pill) !important; padding: .42rem 1.05rem !important;
     cursor: pointer !important;
-    transition: background .15s, border-color .15s !important;
+    transition: background .15s, border-color .15s, color .15s !important;
     min-width: 62px !important;
 }
 [data-testid="stRadio"] label[data-baseweb="radio"]:hover {
-    background: #eae6df !important; border-color: #b0a89e !important;
+    background: var(--accent-soft) !important; border-color: #e0c3ac !important;
 }
 /* Hide circle indicator */
 [data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
@@ -123,13 +157,13 @@ html, body, [class*="css"] {
 [data-testid="stRadio"] label[data-baseweb="radio"] > div:last-child *,
 [data-testid="stRadio"] label[data-baseweb="radio"] span,
 [data-testid="stRadio"] label[data-baseweb="radio"] p {
-    color: #3a3a3a !important; font-size: .83rem !important;
+    color: var(--text) !important; font-size: .84rem !important;
     line-height: 1 !important; text-align: center !important;
-    margin: 0 !important; padding: 0 !important;
+    margin: 0 !important; padding: 0 !important; font-weight: 500 !important;
 }
-/* Selected: black background */
+/* Selected: coral background */
 [data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) {
-    background: #1a1a1a !important; border-color: #1a1a1a !important;
+    background: var(--accent) !important; border-color: var(--accent) !important;
 }
 /* Selected: force WHITE on every child */
 [data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked),
@@ -141,20 +175,26 @@ html, body, [class*="css"] {
 [data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) > div:last-child span,
 [data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer"],
 [data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer"] p {
-    color: #f5f0e8 !important;
+    color: #ffffff !important;
 }
 
-/* ── generate button ── */
+/* ── generate button (Claude send-button style) ── */
 .stButton > button {
-    width: 100%; border-radius: 0 !important;
-    background-color: #1a1a1a !important; color: #f7f5f0 !important;
+    width: 100%; border-radius: var(--radius-pill) !important;
+    background-color: var(--accent) !important; color: #ffffff !important;
     font-family: 'Noto Sans TC', sans-serif !important;
-    font-size: .78rem !important; letter-spacing: .14em !important;
-    padding: .7rem 1rem !important; border: none !important;
+    font-size: .88rem !important; font-weight: 600 !important; letter-spacing: .02em !important;
+    padding: .75rem 1rem !important; border: none !important;
     transition: background-color .18s;
+    box-shadow: 0 1px 2px rgba(194, 103, 63, 0.25);
 }
-.stButton > button:hover { background-color: #3c3c3c !important; }
-.stSuccess { border-radius: 0 !important; border-left: 3px solid #1a1a1a !important; }
+.stButton > button:hover { background-color: var(--accent-hover) !important; }
+.stSuccess {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid #ecd8c9 !important;
+    background-color: var(--accent-soft) !important;
+    color: var(--text) !important;
+}
 #MainMenu, footer, header { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
@@ -162,6 +202,7 @@ html, body, [class*="css"] {
 # ── Header ──────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="form-header">
+    <div class="mark">✦</div>
     <h1>艾迪英特股份有限公司　請假申請</h1>
     <p>Leave Request Form</p>
 </div>
